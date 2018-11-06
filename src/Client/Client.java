@@ -10,7 +10,7 @@ import java.util.Date;
  * создание клиента со всеми необходимыми утилитами, точка входа в программу в классе Client
  */
 
-class ClientSomthing {
+class ClientSomething {
     
     private Socket socket;
     private BufferedReader in; // поток чтения из сокета
@@ -22,7 +22,8 @@ class ClientSomthing {
     private Date time;
     private String dtime;
     private SimpleDateFormat dt1;
-    
+    public String message;
+    WriteMsg Writer;
     /**
      * для создания необходимо принять адрес и номер порта
      *
@@ -30,7 +31,7 @@ class ClientSomthing {
      * @param port
      */
     
-    public ClientSomthing(String addr, int port) {
+    public ClientSomething(String addr, int port) {
         this.addr = addr;
         this.port = port;
         try {
@@ -45,11 +46,15 @@ class ClientSomthing {
             out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.pressNickname(); // перед началом необходимо спросит имя
             new ReadMsg().start(); // нить читающая сообщения из сокета в бесконечном цикле
-            new WriteMsg().start(); // нить пишущая сообщения в сокет приходящие с консоли в бесконечном цикле
+            //////////////////////////////////////////////////////////////////////////////////////////////////////// TODO!
+            Writer = new WriteMsg();
+             Writer.start(); // нить пишущая сообщения в сокет приходящие с консоли в бесконечном цикле
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         } catch (IOException e) {
             // Сокет должен быть закрыт при любой
             // ошибке, кроме ошибки конструктора сокета:
-            ClientSomthing.this.downService();
+            ClientSomething.this.downService();
         }
         // В противном случае сокет будет закрыт
         // в методе run() нити.
@@ -94,13 +99,13 @@ class ClientSomthing {
                 while (true) {
                     str = in.readLine(); // ждем сообщения с сервера
                     if (str.equals("stop")) {
-                        ClientSomthing.this.downService(); // харакири
+                        ClientSomething.this.downService(); // харакири
                         break; // выходим из цикла если пришло "stop"
                     }
                     System.out.println(str); // пишем сообщение с сервера на консоль
                 }
             } catch (IOException e) {
-                ClientSomthing.this.downService();
+                ClientSomething.this.downService();
             }
         }
     }
@@ -116,17 +121,18 @@ class ClientSomthing {
                     time = new Date(); // текущая дата
                     dt1 = new SimpleDateFormat("HH:mm:ss"); // берем только время до секунд
                     dtime = dt1.format(time); // время
-                    userWord = inputUser.readLine(); // сообщения с консоли
+                    userWord = inputUser.readLine(); // сообщения с консоли TODO: отсюда читается вход сообщения
                     if (userWord.equals("stop")) {
                         out.write("stop" + "\n");
-                        ClientSomthing.this.downService(); // харакири
+                        ClientSomething.this.downService(); // харакири
                         break; // выходим из цикла если пришло "stop"
                     } else {
-                        out.write("(" + dtime + ") " + nickname + ": " + userWord + "\n"); // отправляем на сервер
+                        out.write("(" + dtime + ") " + nickname + ": " + userWord + "\n"); // отправляем на сервер TODO: или отсюда
+                        message = "(" + dtime + ") " + nickname + ": " + userWord + "\n";
                     }
                     out.flush(); // чистим
                 } catch (IOException e) {
-                    ClientSomthing.this.downService(); // в случае исключения тоже харакири
+                    ClientSomething.this.downService(); // в случае исключения тоже харакири
                     
                 }
                 
@@ -148,6 +154,12 @@ public class Client {
      */
     
     public static void main(String[] args) {
-        new ClientSomthing(ipAddr, port);
+        ClientSomething clientSomething = new ClientSomething(ipAddr, port);
+//        while(true){
+//            System.out.println(clientSomething.message);
+//
+//        }
+
     }
+
 }

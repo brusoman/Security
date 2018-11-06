@@ -9,12 +9,13 @@ public class Test {
 
     static String cryptString(String string){
         //do here something
-        return string;
+
+        return string.toUpperCase();
     }
 
     static String decryptString(String string){
         //do here something
-        return string;
+        return string.toLowerCase();
     }
 
     public static void main(String[] args) {
