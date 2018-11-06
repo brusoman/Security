@@ -12,7 +12,6 @@ public class ClientForm extends JDialog {
     private JTextField textField1;
 
     public ClientForm() {
-        new ClientSomething("localhost", 8080);
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);

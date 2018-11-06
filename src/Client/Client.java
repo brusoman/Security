@@ -1,6 +1,7 @@
 package Client;
 
 import javax.swing.*;
+import java.awt.*;
 import java.net.*;
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -10,8 +11,8 @@ import java.util.Date;
  * создание клиента со всеми необходимыми утилитами, точка входа в программу в классе Client
  */
 
-class ClientSomething {
-    
+class ClientSomething extends JFrame {
+
     private Socket socket;
     private BufferedReader in; // поток чтения из сокета
     private BufferedWriter out; // поток чтения в сокет
@@ -24,14 +25,43 @@ class ClientSomething {
     private SimpleDateFormat dt1;
     public String message;
     WriteMsg Writer;
+    /////////////////////////////////////JFrame stuff//////////////////////////////////////////
+    private JLabel countLabel;
+    private JButton addCrow;
+    private JButton removeCrow;
+
     /**
      * для создания необходимо принять адрес и номер порта
      *
      * @param addr
      * @param port
      */
-    
+
     public ClientSomething(String addr, int port) {
+        super("Crow calculator");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        /* Подготавливаем компоненты объекта  */
+        countLabel = new JLabel("Crows:");
+        addCrow = new JButton("Add Crow");
+        removeCrow = new JButton("Remove Crow");
+        /* Подготавливаем временные компоненты  */
+        JPanel buttonsPanel = new JPanel(new FlowLayout());
+        /* Расставляем компоненты по местам  */
+        add(countLabel, BorderLayout.NORTH); /* О размещении компонент поговорим позже  */
+        buttonsPanel.add(addCrow);
+        buttonsPanel.add(removeCrow);
+        add(buttonsPanel, BorderLayout.SOUTH);
+
+        ////////////////////////////////////////////JFrame stuff//////////////////////////////////////////
+
+
+
+
+
+
+
+
+
         this.addr = addr;
         this.port = port;
         try {
@@ -48,7 +78,7 @@ class ClientSomething {
             new ReadMsg().start(); // нить читающая сообщения из сокета в бесконечном цикле
             //////////////////////////////////////////////////////////////////////////////////////////////////////// TODO!
             Writer = new WriteMsg();
-             Writer.start(); // нить пишущая сообщения в сокет приходящие с консоли в бесконечном цикле
+            Writer.start(); // нить пишущая сообщения в сокет приходящие с консоли в бесконечном цикле
             ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         } catch (IOException e) {
@@ -59,23 +89,24 @@ class ClientSomething {
         // В противном случае сокет будет закрыт
         // в методе run() нити.
     }
-    
+
     /**
      * просьба ввести имя,
      * и отсылка эхо с приветсвием на сервер
      */
-    
+
     private void pressNickname() {
-        System.out.print("Press your nick: ");
+        //System.out.print("Press your nick: "); TODO: Убрать
         try {
-            nickname = inputUser.readLine();
+//            nickname = inputUser.readLine();// TODO: Убрать
+            nickname = "Test-user";// TODO: Временно
             out.write("Hello " + nickname + "\n");
             out.flush();
         } catch (IOException ignored) {
         }
-        
+
     }
-    
+
     /**
      * закрытие сокета
      */
@@ -86,14 +117,15 @@ class ClientSomething {
                 in.close();
                 out.close();
             }
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
     }
-    
+
     // нить чтения сообщений с сервера
     private class ReadMsg extends Thread {
         @Override
         public void run() {
-            
+
             String str;
             try {
                 while (true) {
@@ -109,10 +141,10 @@ class ClientSomething {
             }
         }
     }
-    
+
     // нить отправляющая сообщения приходящие с консоли на сервер
     public class WriteMsg extends Thread {
-        
+
         @Override
         public void run() {
             while (true) {
@@ -133,33 +165,26 @@ class ClientSomething {
                     out.flush(); // чистим
                 } catch (IOException e) {
                     ClientSomething.this.downService(); // в случае исключения тоже харакири
-                    
+
                 }
-                
+
             }
         }
     }
 }
 
+/**
+ * создание клиент-соединения с узананными адресом и номером порта
+ */
 public class Client {
-    
+
     public static String ipAddr = "localhost";
     public static int port = 8080;
-    private JTextArea textArea1;
-    private JButton button1;
 
-    /**
-     * создание клиент-соединения с узананными адресом и номером порта
-     * @param args
-     */
-    
     public static void main(String[] args) {
         ClientSomething clientSomething = new ClientSomething(ipAddr, port);
-//        while(true){
-//            System.out.println(clientSomething.message);
-//
-//        }
-
+        clientSomething.setVisible(true);
+        clientSomething.pack(); //Эта команда подбирает оптимальный размер в зависимости от содержимого окна
     }
 
 }
